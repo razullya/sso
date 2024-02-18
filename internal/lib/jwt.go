@@ -1,10 +1,11 @@
 package lib
 
 import (
+	"fmt"
 	"sso/internal/domain/models"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 func NewToken(user models.User, app models.App, duration time.Duration) (string, error) {
@@ -13,8 +14,9 @@ func NewToken(user models.User, app models.App, duration time.Duration) (string,
 	claims := token.Claims.(jwt.MapClaims)
 	claims["uid"] = user.ID
 	claims["email"] = user.Email
-	claims["exp"] = time.Now().Add(duration)
+	claims["exp"] = time.Now().Add(duration).Unix()
 	claims["app_id"] = app.ID
+	fmt.Println("!!!", duration.Hours(), duration.Seconds())
 
 	tokenString, err := token.SignedString([]byte(app.Secret))
 	if err != nil {
